@@ -24,8 +24,10 @@ npm start
 
 ## nginx и systemd
 
-- `nginx.example.conf` — reverse proxy на `127.0.0.1:8080`
-- `auto-parts.service.example` — unit для systemd
+- `auto-parts.nginx.conf` — vhost **autoparts.ars000.ru** → `127.0.0.1:8080`
+- `auto-parts.service` — unit для systemd (`/var/www/auto-parts`)
+- `vps-install.sh` — установка/обновление на VPS (LF)
+- `nginx.example.conf`, `auto-parts.service.example` — шаблоны
 
 ## Переменные
 
