@@ -1,18 +1,24 @@
-const API_PATH = '/api/hsprice/'
-
-function getApiKey() {
-  const key = import.meta.env.VITE_FAVORIT_API_KEY
-  if (!key) {
-    throw new Error(
-      'Не задан ключ API. Скопируйте .env.example в .env и укажите VITE_FAVORIT_API_KEY.',
-    )
-  }
-  return key
-}
+const API_PATH = import.meta.env.VITE_API_BASE || '/api/hsprice/'
 
 function buildUrl(params) {
-  const search = new URLSearchParams({ key: getApiKey(), ...params })
-  return `${API_PATH}?${search.toString()}`
+  const search = new URLSearchParams()
+
+  const clientKey = import.meta.env.VITE_FAVORIT_API_KEY
+  if (clientKey) {
+    search.set('key', clientKey)
+  } else if (import.meta.env.DEV) {
+    throw new Error(
+      'Не задан ключ API. Скопируйте .env.example в .env и укажите VITE_FAVORIT_API_KEY (локальная разработка).',
+    )
+  }
+
+  for (const [name, value] of Object.entries(params)) {
+    if (value == null || value === '') continue
+    search.set(name, String(value))
+  }
+
+  const query = search.toString()
+  return query ? `${API_PATH}?${query}` : API_PATH
 }
 
 async function request(params, signal) {
@@ -42,7 +48,7 @@ async function request(params, signal) {
     const apiError = typeof data?.error === 'string' ? data.error : ''
     if (response.status === 403 && /quota exceeded/i.test(apiError)) {
       throw new Error(
-        'Превышен лимит запросов к API. Подождите минуту или укажите свой ключ VITE_FAVORIT_API_KEY в .env.',
+        'Превышен лимит запросов к API. Подождите минуту или укажите ключ покупателя на сервере (FAVORIT_API_KEY).',
       )
     }
     throw new Error(apiError || `Ошибка сервера (${response.status})`)

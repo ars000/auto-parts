@@ -1,0 +1,15 @@
+[Unit]
+Description=Auto Parts (Vite static + Favorit API proxy)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/auto-parts
+EnvironmentFile=/opt/auto-parts/.env.server
+ExecStart=/usr/bin/node server/index.js
+Restart=on-failure
+RestartSec=5
+User=www-data
+
+[Install]
+WantedBy=multi-user.target
